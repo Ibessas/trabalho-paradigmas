@@ -15,4 +15,6 @@ open class Usuario(
     fun autenticar(email: String, senha: String): Boolean {
         return this.email == email && this.senha == senha
     }
+
+
 }

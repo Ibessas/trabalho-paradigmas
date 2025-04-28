@@ -3,13 +3,16 @@ import Data.Refeicao
 import Models.Aluno
 import Models.Cardapio
 import Models.Nutricionista
+import java.util.Scanner
 import java.util.UUID
 
 fun main() {
     val nutricionista: Nutricionista = Nutricionista("Nome", "email@mail.com", "1234", mutableListOf<Cardapio>())
     val israel: Aluno = Aluno("Israel", "israel@mail.com", "1234", 30)
     val lucas: Aluno = Aluno("Lucas", "lucas@mail.com", "1234", 30)
-
+    val cardapio = nutricionista.pegarCardapio()
+    val usuarios = mutableListOf<Usuario>(nutricionista, israel, lucas)
+    val gostos: List<Gosto> = listOf(Gosto.RUIM, Gosto.NORMAL, Gosto.BOM)
     val refCB: Refeicao = Refeicao(UUID.randomUUID().toString(), "Carne Branca", listOf("Frango, Molho, Sal"), 200)
     val refCV: Refeicao =
         Refeicao(UUID.randomUUID().toString(), "Carne Vermelha", listOf("Carne de Boi, Sal, Alho"), 210)
@@ -19,27 +22,121 @@ fun main() {
     nutricionista.cadastrarRefeicao(refCV)
     nutricionista.cadastrarRefeicao(refV)
 
-    val cardapio: Cardapio = nutricionista.pegarCardapio()
+    var usuarioLogado: Usuario? = null
 
-    val gostos: List<Gosto> = listOf(Gosto.RUIM, Gosto.NORMAL, Gosto.BOM)
+    var rodando = true
+    do {
 
-    for (i in 1..100000) {
-        israel.pagarAlimentação()
-        israel.avaliarRefeicao(
-            cardapio,
-            cardapio.getRefeicoes()[(0 .. cardapio.getRefeicoes().size - 1).random()],
-            gostos[(0..gostos.size - 1).random()]
-        )
-    }
+        println("Sistema de gerenciamento do RU")
+        println("Selecione ação\n 1 - Entrar\n 2 - Sair")
+        val test = readln().trim().toInt()
+        when(test){
+            1 -> {
+                var login: Boolean = true
+                do {
+                    println("Insira seu email")
+                    val email = readln().trim()
+                    println("Insira sua senha")
+                    val senha = readln().trim()
 
-    for (i in 1..100000) {
-        lucas.pagarAlimentação()
-        lucas.avaliarRefeicao(
-            cardapio,
-            cardapio.getRefeicoes()[(0 .. cardapio.getRefeicoes().size - 1).random()],
-            gostos[(0..gostos.size - 1).random()]
-        )
-    }
-    cardapio.exibir()
+
+                    for (user in usuarios) {
+                        if (user.autenticar(email, senha)) {
+                            usuarioLogado = user
+                            login = false
+                            println("Logado com sucesso")
+                        }
+                    }
+                    if (usuarioLogado === null) {
+                        println("Autenticação inválida\n Deseja tentar novamente?\n 1 - Sim\n 2 - Não")
+                        login = readln().trim().toInt() == 1
+                    }
+                }while(login)
+            }
+            else -> {
+                println("Fechando sistema")
+                return
+            }
+        }
+
+        if(usuarioLogado !== null){
+            if(usuarioLogado is Aluno){
+                while (usuarioLogado !== null && usuarioLogado is Aluno){
+                    println("Escolha uma opção abaixo\n1 - Consultar cadrapio\n2 - Sugerir alteração\n3 - Avaliar refeição\n4 - Pagar alimentação\n5 - Sair")
+                    val escolha = readln().trim().toInt()
+                    when(escolha){
+                        1 -> usuarioLogado.consultarCardapio(cardapio)
+                        2 -> {
+                            print("Insira sua sugestão: ")
+                            usuarioLogado.sugerirAlteracao(cardapio,readln())
+                            println("Sugestão salva com sucesso")
+                        }
+                        3 -> {
+                            println("Selecione a refeicao")
+                            var auxCont = 0
+                            for(ref in cardapio.getRefeicoes()){
+                                println("${auxCont} - ${ref.nome}")
+                                auxCont++
+                            }
+                            auxCont = 0
+                            val refSelecionada = readln().trim().toInt()
+
+                            println("Selecione o gosto")
+                            for(gosto in gostos){
+                                println("${auxCont} - ${gosto.name}")
+                                auxCont++
+                            }
+
+                            val gostoSelecionado = readln().trim().toInt()
+
+                            usuarioLogado.avaliarRefeicao(cardapio, cardapio.getRefeicoes()[refSelecionada], gostos[gostoSelecionado]  )
+                        }
+
+                        4-> usuarioLogado.pagarAlimentação()
+                        5-> usuarioLogado = null
+                        else -> {
+                            println("Opção inválida, tente novamente")
+                        }
+                    }
+                }
+            }
+            if(usuarioLogado is Nutricionista){
+                while (usuarioLogado !== null && usuarioLogado is Nutricionista){
+
+                }
+            }
+        }
+
+
+    }while(rodando)
+
+
+
+
+//
+//    val cardapio: Cardapio = nutricionista.pegarCardapio()
+//
+//    val gostos: List<Gosto> = listOf(Gosto.RUIM, Gosto.NORMAL, Gosto.BOM)
+//
+//    for (i in 1..10) {
+//        israel.pagarAlimentação()
+//        israel.avaliarRefeicao(
+//            cardapio,
+//            cardapio.getRefeicoes()[(0 .. cardapio.getRefeicoes().size - 1).random()],
+//            gostos[(0..gostos.size - 1).random()]
+//        )
+//    }
+//
+//    israel.sugerirAlteracao(cardapio,  "Teste" )
+//
+//    for (i in 1..10) {
+//        lucas.pagarAlimentação()
+//        lucas.avaliarRefeicao(
+//            cardapio,
+//            cardapio.getRefeicoes()[(0 .. cardapio.getRefeicoes().size - 1).random()],
+//            gostos[(0..gostos.size - 1).random()]
+//        )
+//    }
+//    cardapio.exibir()
 
 }
