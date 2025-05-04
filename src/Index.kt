@@ -30,7 +30,7 @@ fun main() {
         println("Sistema de gerenciamento do RU")
         println("Selecione ação\n 1 - Entrar\n 2 - Sair")
         val test = readln().trim().toInt()
-        when(test){
+        when (test) {
             1 -> {
                 var login: Boolean = true
                 do {
@@ -51,30 +51,32 @@ fun main() {
                         println("Autenticação inválida\n Deseja tentar novamente?\n 1 - Sim\n 2 - Não")
                         login = readln().trim().toInt() == 1
                     }
-                }while(login)
+                } while (login)
             }
+
             else -> {
                 println("Fechando sistema")
                 return
             }
         }
 
-        if(usuarioLogado !== null){
-            if(usuarioLogado is Aluno){
-                while (usuarioLogado !== null && usuarioLogado is Aluno){
+        if (usuarioLogado !== null) {
+            if (usuarioLogado is Aluno) {
+                while (usuarioLogado !== null && usuarioLogado is Aluno) {
                     println("Escolha uma opção abaixo\n1 - Consultar cadrapio\n2 - Sugerir alteração\n3 - Avaliar refeição\n4 - Pagar alimentação\n5 - Sair")
                     val escolha = readln().trim().toInt()
-                    when(escolha){
+                    when (escolha) {
                         1 -> usuarioLogado.consultarCardapio(cardapio)
                         2 -> {
                             print("Insira sua sugestão: ")
-                            usuarioLogado.sugerirAlteracao(cardapio,readln())
+                            usuarioLogado.sugerirAlteracao(cardapio, readln())
                             println("Sugestão salva com sucesso")
                         }
+
                         3 -> {
                             println("Selecione a refeicao")
                             var auxCont = 0
-                            for(ref in cardapio.getRefeicoes()){
+                            for (ref in cardapio.getRefeicoes()) {
                                 println("${auxCont} - ${ref.nome}")
                                 auxCont++
                             }
@@ -82,35 +84,113 @@ fun main() {
                             val refSelecionada = readln().trim().toInt()
 
                             println("Selecione o gosto")
-                            for(gosto in gostos){
+                            for (gosto in gostos) {
                                 println("${auxCont} - ${gosto.name}")
                                 auxCont++
                             }
 
                             val gostoSelecionado = readln().trim().toInt()
 
-                            usuarioLogado.avaliarRefeicao(cardapio, cardapio.getRefeicoes()[refSelecionada], gostos[gostoSelecionado]  )
+                            usuarioLogado.avaliarRefeicao(
+                                cardapio,
+                                cardapio.getRefeicoes()[refSelecionada],
+                                gostos[gostoSelecionado]
+                            )
                         }
 
-                        4-> usuarioLogado.pagarAlimentação()
-                        5-> usuarioLogado = null
+                        4 -> usuarioLogado.pagarAlimentação()
+                        5 -> usuarioLogado = null
                         else -> {
                             println("Opção inválida, tente novamente")
                         }
                     }
                 }
             }
-            if(usuarioLogado is Nutricionista){
-                while (usuarioLogado !== null && usuarioLogado is Nutricionista){
+            if (usuarioLogado is Nutricionista) {
+                while (usuarioLogado !== null && usuarioLogado is Nutricionista) {
+                    println("Escolha uma opção abaixo\n1 - Cadastrar Refeição\n2 - Alterar Refeição\n3 - Consultar Cardápio\n4 - Mostrar Relatório\n5 - Sair")
+                    val escolha = readln().trim().toInt()
+                    when (escolha) {
+                        1 -> {
+                            println("Qual o nome da refeição? ")
+                            val nome = readln().trim()
+                            println("Quais os ingredientes? (separe-os por ',') ")
+                            val ingredientes = readln().split(',')
+                            println("Quantas calorias tem a refeição?")
+                            val calorias = readln().toInt()
+                            val novaRef: Refeicao = Refeicao(UUID.randomUUID().toString(), nome, ingredientes, calorias)
 
+                            nutricionista.cadastrarRefeicao(novaRef)
+                        }
+                        2 -> {
+                            var tentarIdNovamente = true
+                            var ref: Refeicao?
+                            var id = ""
+                            do {
+                                nutricionista.gerarRelatorioNutricional(nutricionista.pegarCardapio())
+                                print("\nDigite o Id da refeição que deseja alterar: ")
+                                id = readln()
+                                ref = nutricionista.pegarRefeicaoPeloId(id)
+                                if (ref == null) {
+                                    println("Refeição não encontrada, deseja tentar novamente?\n1 - Sim\n2 - Não")
+                                    tentarIdNovamente = readln().toInt() == 1
+                                } else {
+                                    tentarIdNovamente = false
+                                }
+                            } while (tentarIdNovamente)
+
+                            println("Escolha qual atributo deseja alterar:\n1 - Nome\n2 - Ingredientes\n3 - Calorias")
+                            val atributo = readln().toInt()
+                            when (atributo) {
+                                1 -> {
+                                    println("Digite o novo nome")
+                                    if (ref != null) {
+                                        nutricionista.alterarRefeicao(
+                                            id,
+                                            Refeicao(ref.id, readln().trim(), ref.ingredientes, ref.calorias)
+                                        )
+                                    }
+                                }
+
+                                2 -> {
+                                    println("Digite os ingredientes separados por ',':")
+                                    if (ref != null) {
+                                        nutricionista.alterarRefeicao(
+                                            id,
+                                            Refeicao(ref.id, ref.nome, readln().split(','), ref.calorias)
+                                        )
+                                    }
+
+                                }
+
+                                3 -> {
+                                    println("Digite a nova quantidade de calorias:")
+                                    if (ref != null) {
+                                        nutricionista.alterarRefeicao(
+                                            id,
+                                            Refeicao(ref.id, ref.nome, ref.ingredientes, readln().toInt())
+                                        )
+                                    }
+
+                                }
+                            }
+                        }
+                        3 -> {
+                            nutricionista.consultarCardapio()
+                        }
+                        4 -> {
+                            nutricionista.gerarRelatorioNutricional(nutricionista.pegarCardapio())
+                        }
+                        5 -> {
+                            usuarioLogado = null
+                        }
+                    }
                 }
             }
         }
 
 
-    }while(rodando)
-
-
+    } while (rodando)
 
 
 //

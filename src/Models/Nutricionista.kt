@@ -28,12 +28,13 @@ class Nutricionista(
 
     override fun pegarCardapio(): Cardapio {
         val today: Date = Date.from(Instant.now())
-        if(cardapios.size > 0){
+        if (cardapios.size > 0) {
             val lastData: Date = cardapios[0].getData()
 
             if (lastData.date == today.date &&
                 lastData.month == today.month &&
-                lastData.year == today.year) {
+                lastData.year == today.year
+            ) {
                 return cardapios[0]
             }
         }
@@ -42,8 +43,18 @@ class Nutricionista(
         return cardapio
     }
 
+    fun pegarRefeicaoPeloId(id: String): Refeicao? {
+        cardapios.forEach { cardapio ->
+            val res = cardapio.getRefeicoes().find { refeicao -> refeicao.id == id }
+            if(res != null){
+                return res
+            }
+        }
+        return null
+    }
+
     fun gerarRelatorioNutricional(cardapio: Cardapio) {
-        for(el in cardapios){
+        for (el in cardapios) {
             el.exibir()
         }
     }
