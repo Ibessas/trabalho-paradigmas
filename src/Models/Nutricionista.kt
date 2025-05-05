@@ -1,7 +1,6 @@
 package Models
 
 import Data.Refeicao
-import Interfaces.IAcoesNutricionista
 import Usuario
 import java.time.Instant
 import java.util.*

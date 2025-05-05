@@ -23,10 +23,10 @@ class Cardapio(private val data: Date) {
         }
     }
 
-    fun exibir() {
+    fun exibir(aluno: Boolean = true) {
         for (ref in refeicoes) {
             println("- ${ref.id} ${ref.nome} (${ref.calorias} kcal) (${ref.ingredientes.joinToString(", ")})")
-            if (avaliacoes.size > 0) {
+            if (avaliacoes.size > 0 && !aluno) {
                 val avB: List<Avaliacao?> = avaliacoes.filter { ref.id == it.refeicao.id && it.nota == Gosto.BOM }
                 val avN: List<Avaliacao?> = avaliacoes.filter { ref.id == it.refeicao.id && it.nota == Gosto.NORMAL }
                 val avR: List<Avaliacao?> = avaliacoes.filter { ref.id == it.refeicao.id && it.nota == Gosto.RUIM }
@@ -35,7 +35,7 @@ class Cardapio(private val data: Date) {
                 exibirVotos(avR)
             }
         }
-        if (sugestoes.size > 0) {
+        if (sugestoes.size > 0 && !aluno) {
             println("- Sugetsões: ")
             sugestoes.forEach({ println("- ${it}") })
         }

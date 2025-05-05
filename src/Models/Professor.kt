@@ -7,11 +7,10 @@ import Interfaces.iComensal
 import Usuario
 import java.util.UUID
 
-class Aluno(
+class Professor(
     nome: String,
     email: String,
     senha: String,
-    private var insento: Boolean,
     private var creditos: Int
 ) : Usuario(UUID.randomUUID().toString(), nome, email, senha), iComensal {
 
@@ -30,22 +29,14 @@ class Aluno(
     }
 
     override fun compraCredito(creditos: Int) {
-        if(insento){
-            println("Aluno Insento")
-            return
-        }
-
-        this.creditos = creditos
+        this.creditos = creditos / 2
     }
 
+
     override fun comprarRefeicao() {
-        if(insento){
-            return println("Aluno Insento")
-        }
         if(this.creditos <= 0){
             println("Créditos insuficientes")
         }
-        this.creditos --
         println("Creditos restantes: ${this.creditos}")
     }
 }

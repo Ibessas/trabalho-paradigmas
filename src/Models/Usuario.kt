@@ -16,5 +16,4 @@ open class Usuario(
         return this.email == email && this.senha == senha
     }
 
-
 }
