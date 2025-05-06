@@ -10,22 +10,22 @@ class Nutricionista(
     email: String,
     senha: String,
     private val cardapios: MutableList<Cardapio>
-) : Usuario(UUID.randomUUID().toString(), nome, email, senha), IAcoesNutricionista {
+) : Usuario(UUID.randomUUID().toString(), nome, email, senha) {
 
-    override fun cadastrarRefeicao(refeicao: Refeicao) {
+    fun cadastrarRefeicao(refeicao: Refeicao) {
         println("Refeicão cadastrada: ${refeicao.nome}")
         pegarCardapio().adicionarRefeicao(refeicao)
     }
 
-    override fun alterarRefeicao(idRefeicao: String, novaRefeicao: Refeicao) {
+    fun alterarRefeicao(idRefeicao: String, novaRefeicao: Refeicao) {
         pegarCardapio().atualizarRefeicao(idRefeicao, novaRefeicao)
     }
 
-    override fun consultarCardapio() {
+    fun consultarCardapio() {
         pegarCardapio().exibir()
     }
 
-    override fun pegarCardapio(): Cardapio {
+    fun pegarCardapio(): Cardapio {
         val today: Date = Date.from(Instant.now())
         if (cardapios.size > 0) {
             val lastData: Date = cardapios[0].getData()
